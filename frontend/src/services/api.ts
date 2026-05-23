@@ -17,6 +17,14 @@ const baseURL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://
 
 export const http = axios.create({ baseURL, timeout: 10_000 });
 
+function toSafeTaskId(id: number): string {
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new TypeError("Task id must be a positive safe integer");
+  }
+
+  return String(id);
+}
+
 export async function listTasks(): Promise<Task[]> {
   const { data } = await http.get<Task[]>("/tasks");
   return data;
@@ -28,12 +36,14 @@ export async function createTask(payload: TaskCreatePayload): Promise<Task> {
 }
 
 export async function toggleTask(id: number): Promise<Task> {
-  const { data } = await http.post<Task>(`/tasks/${id}/toggle`);
+  const safeId = toSafeTaskId(id);
+  const { data } = await http.post<Task>(`/tasks/${safeId}/toggle`);
   return data;
 }
 
 export async function deleteTask(id: number): Promise<void> {
-  await http.delete(`/tasks/${id}`);
+  const safeId = toSafeTaskId(id);
+  await http.delete(`/tasks/${safeId}`);
 }
 
 export async function countTasks(): Promise<number> {
