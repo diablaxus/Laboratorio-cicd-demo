@@ -37,13 +37,17 @@ export async function createTask(payload: TaskCreatePayload): Promise<Task> {
 
 export async function toggleTask(id: number): Promise<Task> {
   const safeId = toSafeTaskId(id);
-  const { data } = await http.post<Task>(`/tasks/${safeId}/toggle`);
+  const { data } = await http.post<Task>("/tasks/toggle", undefined, {
+    params: { task_id: safeId },
+  });
   return data;
 }
 
 export async function deleteTask(id: number): Promise<void> {
   const safeId = toSafeTaskId(id);
-  await http.delete(`/tasks/${safeId}`);
+  await http.delete("/tasks", {
+    params: { task_id: safeId },
+  });
 }
 
 export async function countTasks(): Promise<number> {

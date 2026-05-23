@@ -60,8 +60,30 @@ def toggle_task_endpoint(task_id: int, db: Session = Depends(get_db)) -> TaskRea
     return task
 
 
+@router.post("/toggle", response_model=TaskRead)
+def toggle_task_by_query_endpoint(
+    task_id: int,
+    db: Session = Depends(get_db),
+) -> TaskRead:
+    task = task_controller.toggle_task(db, task_id)
+    if task is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    return task
+
+
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task_endpoint(task_id: int, db: Session = Depends(get_db)) -> None:
+    ok = task_controller.delete_task(db, task_id)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    return None
+
+
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task_by_query_endpoint(
+    task_id: int,
+    db: Session = Depends(get_db),
+) -> None:
     ok = task_controller.delete_task(db, task_id)
     if not ok:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")

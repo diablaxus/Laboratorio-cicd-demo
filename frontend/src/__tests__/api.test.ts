@@ -25,19 +25,19 @@ describe("services/api", () => {
     expect(created.id).toBe(2);
   });
 
-  it("toggleTask hace POST a /tasks/:id/toggle", async () => {
+  it("toggleTask hace POST a /tasks/toggle con query param", async () => {
     const post = vi.spyOn(api.http, "post").mockResolvedValueOnce({
       data: { id: 3, title: "t", description: null, completed: true, created_at: "z" },
     } as any);
     const updated = await api.toggleTask(3);
-    expect(post).toHaveBeenCalledWith("/tasks/3/toggle");
+    expect(post).toHaveBeenCalledWith("/tasks/toggle", undefined, { params: { task_id: "3" } });
     expect(updated.completed).toBe(true);
   });
 
-  it("deleteTask hace DELETE a /tasks/:id", async () => {
+  it("deleteTask hace DELETE a /tasks con query param", async () => {
     const del = vi.spyOn(api.http, "delete").mockResolvedValueOnce({ data: undefined } as any);
     await api.deleteTask(4);
-    expect(del).toHaveBeenCalledWith("/tasks/4");
+    expect(del).toHaveBeenCalledWith("/tasks", { params: { task_id: "4" } });
   });
 
   it("countTasks devuelve el total", async () => {
